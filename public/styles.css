@@ -1,0 +1,30 @@
+#main {
+    height: 450px;
+    width: 450px;
+}
+
+#main:hover {
+    cursor: zoom-in;
+}
+
+#Marks-main-container {
+    display: flex;
+}
+
+#Marks-side-images {
+    
+}
+
+#Marks-main-image {
+    
+}
+
+.side {
+    display: flex;
+    width: 62px;
+    height: 62px;
+}
+
+.side:hover {
+    cursor: pointer;
+}
