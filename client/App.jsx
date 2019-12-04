@@ -9,16 +9,21 @@ React.Component {
         super(props);
         this.state = {
             selectedItem: 1,
-            numOfImgs: 6,
+            numOfImgs: 2,
             itemName: "",
             numOfVids: 0,
             imageNumber: 1
         }
-        this.get.bind(this);
-        this.onClick.bind(this);
+        this.getImageData.bind(this);
+        this.onClickSide.bind(this);
+        this.onClickMain.bind(this);
     }
 
-    get() {
+    componentDidMount() {
+        this.getImageData();
+    }
+
+    getImageData() {
         axios.get(`/${this.state.selectedItem}`)
         .then( (response) => {
             const data = response.data[0];
@@ -33,7 +38,8 @@ React.Component {
         })
     }
 
-    onClick(event) {
+    onClickSide(event) {
+        console.log(this);
         const target = event.target.src;
         const split = target.split('Image-')
         const anotherSplit = split[1].split('.');
@@ -41,17 +47,22 @@ React.Component {
         this.setState({
             imageNumber: id,
         })
+        const borderable = document.getElementsByClassName(`side${this.state.imageNumber}`)
+        // Add a border to this bitch
+    }
+
+    onClickMain() {
+        //This should throw up a modal with all images
     }
 
     render() {
-        this.get()
         return (
-            <div id="Marks-main-container">
-                <div id="Marks-side-images">
-                <SideImages imgId={this.state.selectedItem} onClick={this.onClick.bind(this)} numOfImgs={this.state.numOfImgs} imageNumber={this.state.imageNumber} />
+            <div id="m_main_container">
+                <div id="m_side_images">
+                <SideImages imgId={this.state.selectedItem} onClick={this.onClickSide.bind(this)} numOfImgs={this.state.numOfImgs} imgNum={this.state.imageNumber} />
                 </div>
-                <div id="Marks-main-image">
-                <MainImage imgId={this.state.selectedItem} imgNum={this.state.imageNumber}/>
+                <div id="m_main_image">
+                <MainImage onClick={this.onClickMain.bind(this)} imgId={this.state.selectedItem} imgNum={this.state.imageNumber}/>
                 </div>
             </div>
         )

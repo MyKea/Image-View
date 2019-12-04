@@ -7,7 +7,7 @@ app.use(express.static('public'));
 app.get(`/:id`, function (req, res) {
     db.getImage(req.params.id, (error, result) => {
         if (error) {
-            res.error(error);
+            res.send(error);
         } else {
             res.send(result);
         }
