@@ -3,6 +3,7 @@ DROP DATABASE IF EXISTS Image_View;
 CREATE DATABASE Image_View;
 
 USE Image_View;
+SET character_set_client=utf8, character_set_connection=utf8, character_set_database=utf8, character_set_results=utf8, character_set_server=utf8;
 
 CREATE TABLE Products (
   id int NOT NULL AUTO_INCREMENT,
@@ -14,6 +15,8 @@ CREATE TABLE Products (
   PRIMARY KEY (ID)
 );
 
+
+-- source /Users/mfuechec/Desktop/hr/mark_image-view/schema.sql
 /*  Execute this file from the command line by typing:
  *    mysql -u root < schema.sql -p
  *  to create the database and the tables.*/
@@ -42,8 +45,8 @@ CREATE TABLE Products (
    id,
    'HAVSTEN',
    8,
-   'https://www.youtube.com/embed/gnHDOmifrfA?autoplay=1;enablejsapi=1',
-   'https://mmapi.ikea.com/im/productfilms/images/fe000149_445x250_00h_00m_01s.jpg?imPolicy=thumbnail',
+   'https://www.youtube.com/embed/gnHDOmifrfA?enablejsapi=1',
+   'https://img.youtube.com/vi/gnHDOmifrfA/0.jpg',
    'Chair, in/outdoor, beige, 32 5/8x37x35 3/8 "'
  );
   INSERT INTO Products VALUES (
@@ -162,8 +165,8 @@ CREATE TABLE Products (
    id,
    'TROLLBERGET',
    6,
-   'https://www.youtube.com/embed/4sexn7JH5_s?autoplay=1;enablejsapi=1',
-   'https://ww8.ikea.com/ext/umb/media/1599/tn-trollberget.jpg?imPolicy=thumbnail',
+   'https://www.youtube.com/embed/4sexn7JH5_s?enablejsapi=1',
+   'https://img.youtube.com/vi/4sexn7JH5_s/0.jpg',
    'Sit/stand support, Glose black'
  );
   INSERT INTO Products VALUES (
@@ -685,7 +688,7 @@ CREATE TABLE Products (
    INSERT INTO Products VALUES (
    id,
    'KÖTTBULLAR',
-   6,
+   1,
    null,
    null,
    'Meatballs, frozen'
@@ -758,8 +761,8 @@ CREATE TABLE Products (
    id,
    'HAVSTEN',
    7,
-   'https://www.youtube.com/embed/gnHDOmifrfA?autoplay=1;enablejsapi=1',
-   'https://ww8.ikea.com/ext/umb/media/1809/tn-havsten.jpg?imPolicy=thumbnail',
+   'https://www.youtube.com/embed/gnHDOmifrfA?enablejsapi=1',
+   'https://img.youtube.com/vi/gnHDOmifrfA/0.jpg',
    'Loveseat, in/outdoor, without armrests with open end, beige, 64 5/8x37x35 3/8 "'
  );
   INSERT INTO Products VALUES (

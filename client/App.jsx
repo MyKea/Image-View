@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import MainImage from './components/MainImage.jsx';
 import SideImages from './components/SideImages.jsx';
+import BuyItemModal from './components/BuyItemModal.jsx';
 
 class App extends
 React.Component {
@@ -16,20 +17,39 @@ React.Component {
             videoThumb: null,
             description: '',
             imageNumber: 1,
-            dummy: true
+            createdSheet: false
         }
-        this.getImageData.bind(this);
-        this.onClickSide.bind(this);
-        this.onClickMain.bind(this);
-        this.setBorder.bind(this);
-        this.animate.bind(this);
-        this.onClose.bind(this);
-        this.onVideoClick.bind(this);
-        this.setBorder.bind(this);
+        this.getWishListCoords = this.getWishListCoords.bind(this);
     }
 
     componentDidMount() {
         this.getImageData();
+        window.addEventListener('scroll', () => {
+            this.onScroll();
+        })
+        window.addEventListener('productChanged', (event) => {
+            this.setState({
+              selectedItem: event.detail.productId,
+            }, () => {
+              this.getImageData();
+            });
+          });
+    }
+
+    onScroll() {
+        if (window.scrollY > this.getWishListCoords()) {
+            document.getElementById('m_buyItemModal').style.display = 'flex';
+        }
+        if (window.scrollY < this.getWishListCoords()) {
+            document.getElementById('m_buyItemModal').style.display = 'none';
+        }
+    }
+
+    getWishListCoords() {
+        var distanceFromTop = document.body.getBoundingClientRect().top * -1;
+        var element = document.getElementById('b_shoppingListButton');
+        var distanceToBottom = element.getBoundingClientRect().bottom;
+        return distanceFromTop + distanceToBottom;
     }
 
     onVideoClick() {
@@ -37,32 +57,55 @@ React.Component {
         const borderable = document.getElementsByClassName('video');
         borderable[0].attributes[0].nodeValue = 'video bordered';
         this.setBorder(10);
+        this.hideImages();
     }
 
     animate() {
         var element = document.getElementById('mainImgGallery');
         element.classList.remove('animate');
         void element.offsetWidth;
-        var sheet = document.styleSheets[0];
-        var previous = this.state.previouslySelectedImageNumber;
-        var current = this.state.imageNumber;
-        for (var i = sheet.rules.length-1; i > -1; i--) {
-            if (sheet.rules[i].name === "gallerymover" && sheet.deleteRule(i) !== undefined) {
-                sheet.deleteRule(i)
-                console.log(sheet)
-            }
-        }
-        if (sheet.insertRule !== undefined) {
-            sheet.insertRule(
+        if (this.state.createdSheet) {
+            this.changeRule();
+        } else {
+            var previous = this.state.previouslySelectedImageNumber;
+            var current = this.state.imageNumber;
+            var sheet = document.createElement('style')
+            sheet.innerHTML = 
                 `
                 @keyframes gallerymover {
                     0% {right: ${(previous * 100) - 100}%;}
                     100% {right: ${(current * 100) - 100}%;}
                 }
-                `
-            )
+                `;
+            document.body.appendChild(sheet);
+            element.classList.add('animate');
+            this.setState({
+                createdSheet: true
+            })
         }
-        element.classList.add('animate');
+    }
+
+    changeRule() {
+        var element = document.getElementById('mainImgGallery');
+        var previous = this.state.previouslySelectedImageNumber;
+        var current = this.state.imageNumber;
+        for (var i = 0; i < document.styleSheets.length; i++) {
+            if (document.styleSheets[i].href === null && document.styleSheets[i].cssRules[0] !== undefined) {
+                if (document.styleSheets[i].cssRules[0].name === 'gallerymover') {
+                    const sheet = document.styleSheets[i];
+                    sheet.deleteRule(0);
+                    sheet.insertRule(
+                        `
+                        @keyframes gallerymover {
+                            0% {right: ${(previous * 100) - 100}%;}
+                            100% {right: ${(current * 100) - 100}%;}
+                        }
+                        `
+                    )
+                    element.classList.add('animate');
+                }
+            }
+        }
     }
 
     setBorder(selected) {
@@ -82,8 +125,16 @@ React.Component {
         }
     }
 
+    displayImages() {
+        document.getElementById('mainImgGallery').style.display = 'flex';
+    }
+
+    hideImages() {
+        document.getElementById('mainImgGallery').style.display = 'none';
+    }
+
     getImageData() {
-        axios.get(`/${this.state.selectedItem}`)
+        axios.get(`/${this.state.selectedItem}`, {baseURL: 'http://markymark-env.dijtmsca46.us-east-2.elasticbeanstalk.com/'})
         .then( (response) => {
             const data = response.data[0];
             this.setState({
@@ -94,6 +145,7 @@ React.Component {
                 description: data.description
             })
             this.setBorder(1);
+            this.displayImages();
         })
         .catch(function (error) {
             console.log(error);
@@ -101,6 +153,7 @@ React.Component {
     }
 
     onClickSide(event) {
+        this.displayImages();
         if (this.state.videoThumb !== null) {
             document.getElementById('video').style.display = 'none';
         }
@@ -121,14 +174,17 @@ React.Component {
     onClickMain() {
         var modal = document.getElementById("myModal");
         modal.style.display = 'flex';
+        document.documentElement.style.overflow = 'hidden';
     }
 
     onClose() {
         var modal = document.getElementById("myModal");
         modal.style.display = 'none';
+        document.documentElement.style.overflow = 'auto';
     }
 
     onClickArrow(event) {
+        this.displayImages();
         var currentImage = this.state.imageNumber;
         if (event.target.className.baseVal === "left") {
             if (this.state.imageNumber > 1) {
@@ -166,11 +222,33 @@ React.Component {
             <div className='m_root'>
                 <div id="m_main_container">
                     <div id="m_side_images">
-                        <SideImages videoThumb={this.state.videoThumb} onVideoClick={this.onVideoClick.bind(this)} selectedItemId={this.state.selectedItem} onClick={this.onClickSide.bind(this)} numOfImgs={this.state.numOfImgs} imgNum={this.state.imageNumber} />
+                        <SideImages 
+                            videoThumb={this.state.videoThumb} 
+                            onVideoClick={this.onVideoClick.bind(this)} 
+                            selectedItemId={this.state.selectedItem} 
+                            onClick={this.onClickSide.bind(this)} 
+                            numOfImgs={this.state.numOfImgs} 
+                            imgNum={this.state.imageNumber} 
+                        />
                     </div>
                     <div id="m_main_image">
-                        <MainImage videoEmbed={this.state.videoEmbed} onClose={this.onClose.bind(this)} previousImage={this.state.previouslySelectedImageNumber} numOfImgs={this.state.numOfImgs} onScroll={this.onClickArrow.bind(this)} onClick={this.onClickMain.bind(this)} selectedItemId={this.state.selectedItem} imgNum={this.state.imageNumber}/>
+                        <MainImage 
+                            videoEmbed={this.state.videoEmbed} 
+                            onClose={this.onClose.bind(this)} 
+                            previousImage={this.state.previouslySelectedImageNumber} 
+                            numOfImgs={this.state.numOfImgs} 
+                            onScroll={this.onClickArrow.bind(this)} 
+                            onClick={this.onClickMain.bind(this)} 
+                            selectedItemId={this.state.selectedItem} 
+                            imgNum={this.state.imageNumber}
+                        />
                     </div>
+                </div>
+                <div id='m_buyItemModal'>
+                    <BuyItemModal 
+                        itemName={this.state.itemName} 
+                        selectedItemId={this.state.selectedItem}
+                    />
                 </div>
             </div>
         )
