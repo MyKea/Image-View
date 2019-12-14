@@ -23,17 +23,13 @@ React.Component {
     }
 
     componentDidMount() {
-        this.getImageData();
         window.addEventListener('scroll', () => {
             this.onScroll();
         })
         window.addEventListener('productChanged', (event) => {
-            this.setState({
-              selectedItem: event.detail.productId,
-            }, () => {
-              this.getImageData();
-            });
-          });
+            this.getImageData(event.detail.productId);
+        });
+        this.getImageData();
     }
 
     onScroll() {
@@ -133,19 +129,24 @@ React.Component {
         document.getElementById('mainImgGallery').style.display = 'none';
     }
 
-    getImageData() {
-        axios.get(`/${this.state.selectedItem}`, {baseURL: 'http://markymark-env.dijtmsca46.us-east-2.elasticbeanstalk.com/'})
+    getImageData(id) {
+        id = id || 3;
+        axios.get(`/${id}`, {baseURL: 'http://markymark-env.dijtmsca46.us-east-2.elasticbeanstalk.com/'})
         .then( (response) => {
             const data = response.data[0];
             this.setState({
                 numOfImgs: data.images,
+                selectedItem: id,
                 itemName: data.name,
                 videoEmbed: data.videoEmbed,
                 videoThumb: data.videoThumb,
-                description: data.description
+                description: data.description,
+                imageNumber: 1
+            }, () => {
+                this.setBorder(1);
+                this.displayImages();
+                this.animate();
             })
-            this.setBorder(1);
-            this.displayImages();
         })
         .catch(function (error) {
             console.log(error);
