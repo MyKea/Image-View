@@ -97,7 +97,7 @@ React.Component {
                             100% {right: ${(current * 100) - 100}%;}
                         }
                         `
-                    )
+                    );
                     element.classList.add('animate');
                 }
             }
@@ -181,7 +181,7 @@ React.Component {
     onClose() {
         var modal = document.getElementById("myModal");
         modal.style.display = 'none';
-        document.documentElement.style.overflow = 'auto';
+        document.documentElement.style.overflow = '';
     }
 
     onClickArrow(event) {
