@@ -13,4 +13,4 @@ The final product seamlessly integrates the five components, passes client input
 
 ## App In Action
 
-<iframe src="https://giphy.com/embed/VhJvVVXssCeLCggrKw" width="480" height="300" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/VhJvVVXssCeLCggrKw">via GIPHY</a></p>
+<img src="https://media.giphy.com/media/VhJvVVXssCeLCggrKw/giphy.gif" />
